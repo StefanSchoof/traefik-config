@@ -1,0 +1,61 @@
+version: '3.5'
+
+services:
+  traefik:
+    image: traefik
+    restart: unless-stopped
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.defaultRule=Host(`{{ index .Labels \"com.docker.compose.service\" }}.$DOMAINNAME`)"
+      - "--providers.file.filename=/etc/traefik/traefik_config.yml"
+      - "--entrypoints.http.address=:443"
+      - "--entrypoints.http.http.tls.certResolver=letsencrypt"
+      - "--entrypoints.http.http.middlewares=auth@docker"
+      - "--certificatesResolvers.letsencrypt.acme.email=$ACMEMAIL"
+      - "--certificatesResolvers.letsencrypt.acme.storage=acme.json"
+      - "--certificatesResolvers.letsencrypt.acme.dnsChallenge.provider=duckdns"
+    networks: 
+      - traefik
+    ports:
+      - 443:443
+      - 9080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik_config.yml:/etc/traefik/traefik_config.yml
+      - ./acme.json:/acme.json
+    environment: 
+      - DUCKDNS_TOKEN
+      - DOMAINNAME
+
+  auth:
+    image: thomseddon/traefik-forward-auth:2-arm
+    networks:
+      - traefik
+    environment:
+#      - LOG_LEVEL=debug
+      - PROVIDERS_GOOGLE_CLIENT_ID
+      - PROVIDERS_GOOGLE_CLIENT_SECRET
+      - SECRET
+      - COOKIE_DOMAIN=$DOMAINNAME
+      - AUTH_HOST=auth.$DOMAINNAME
+      - LIFETIME=2592000 # 30 days
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.auth.forwardauth.address=http://auth:4181"
+      - "traefik.http.middlewares.auth.forwardauth.authResponseHeaders=X-Forwarded-User"
+      - "traefik.http.services.auth.loadbalancer.server.port=4181"
+
+
+  test:
+    image: containous/whoami
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.test.loadbalancer.server.port=80"
+
+networks:
+  traefik:
+    name: traefik

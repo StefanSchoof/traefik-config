@@ -1,0 +1,17 @@
+tls:
+  options:
+    default:
+      minVersion: VersionTLS13
+
+http:
+  routers:
+    rockrobo:
+      entryPoints:
+      - http
+      service: rockrobo
+      rule: Host(`rockrobo.{{env "DOMAINNAME"}}`)
+  services:
+    rockrobo:
+      loadBalancer:
+        servers:
+        - url: "http://rockrobo.fritz.box/"
