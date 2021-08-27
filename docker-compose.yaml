@@ -7,10 +7,12 @@ services:
     command:
       #- "--log.level=DEBUG"
       - "--api.insecure=true"
+      - "--experimental.http3=true"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.defaultRule=Host(`{{ index .Labels \"com.docker.compose.service\" }}.$DOMAINNAME`)"
       - "--providers.file.filename=/etc/traefik/traefik_config.yml"
       - "--entrypoints.http.address=:443"
+      - "--entrypoints.http.enablehttp3=true"
       - "--entrypoints.http.http.tls.certResolver=letsencrypt"
       - "--entrypoints.http.http.middlewares=auth@docker"
       - "--certificatesResolvers.letsencrypt.acme.email=$ACMEMAIL"
@@ -20,6 +22,7 @@ services:
       - traefik
     ports:
       - 443:443
+      - 443:443/udp
       - 9080:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
