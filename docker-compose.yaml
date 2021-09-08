@@ -34,6 +34,7 @@ services:
 
   auth:
     image: thomseddon/traefik-forward-auth:2-arm
+    restart: unless-stopped
     networks:
       - traefik
     environment:
@@ -53,6 +54,7 @@ services:
 
   test:
     image: containous/whoami
+    restart: unless-stopped
     networks:
       - traefik
     labels:
