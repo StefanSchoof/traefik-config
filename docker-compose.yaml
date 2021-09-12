@@ -45,6 +45,7 @@ services:
       - COOKIE_DOMAIN=$DOMAINNAME
       - AUTH_HOST=auth.$DOMAINNAME
       - LIFETIME=2592000 # 30 days
+      - WHITELIST
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.auth.forwardauth.address=http://auth:4181"
