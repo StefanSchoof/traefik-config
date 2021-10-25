@@ -46,6 +46,11 @@ services:
       - AUTH_HOST=auth.$DOMAINNAME
       - LIFETIME=2592000 # 30 days
       - WHITELIST
+    command:
+      # manifest json will be downloaded in default without cookie.
+      # Since this is not private, disable auth for it
+      - "--rule.manifest.action=allow"
+      - "--rule.manifest.rule=Path(`/manifest.json`)"
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.auth.forwardauth.address=http://auth:4181"
