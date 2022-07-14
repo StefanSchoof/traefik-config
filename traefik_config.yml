@@ -4,14 +4,28 @@ tls:
       minVersion: VersionTLS13
 
 http:
+  middlewares:
+    hsts:
+      headers:
+        stsseconds: 63072000
+        stsIncludeSubdomains: true
   routers:
     rockrobo:
       entryPoints:
-      - http
+        - http
       service: rockrobo
       rule: Host(`rockrobo.{{env "DOMAINNAME"}}`)
+    espressoapi:
+      entryPoints:
+        - http
+      service: espressoapi
+      rule: Host(`espresso.{{env "DOMAINNAME"}}`) && PathPrefix(`/api`)
   services:
     rockrobo:
       loadBalancer:
         servers:
-        - url: "http://rockrobo.fritz.box/"
+          - url: "http://rockrobo.fritz.box/"
+    espressoapi:
+      loadBalancer:
+        servers:
+          - url: "http://pi.fritz.box:8000/"

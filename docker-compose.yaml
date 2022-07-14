@@ -12,9 +12,10 @@ services:
       - "--providers.docker.defaultRule=Host(`{{ index .Labels \"com.docker.compose.service\" }}.$DOMAINNAME`)"
       - "--providers.file.filename=/etc/traefik/traefik_config.yml"
       - "--entrypoints.http.address=:443"
-      - "--entrypoints.http.enablehttp3=true"
+      - "--entrypoints.http.http3=true"
       - "--entrypoints.http.http.tls.certResolver=letsencrypt"
       - "--entrypoints.http.http.middlewares=auth@docker"
+      - "--entrypoints.http.http.middlewares=hsts@file"
       - "--certificatesResolvers.letsencrypt.acme.email=$ACMEMAIL"
       - "--certificatesResolvers.letsencrypt.acme.storage=acme.json"
       - "--certificatesResolvers.letsencrypt.acme.dnsChallenge.provider=duckdns"
@@ -31,6 +32,8 @@ services:
     environment: 
       - DUCKDNS_TOKEN
       - DOMAINNAME
+    labels:
+      - "com.centurylinklabs.watchtower.monitor-only=true"
 
   auth:
     image: thomseddon/traefik-forward-auth:2-arm
@@ -51,11 +54,14 @@ services:
       # Since this is not private, disable auth for it
       - "--rule.manifest.action=allow"
       - "--rule.manifest.rule=Path(`/manifest.json`)"
+      - "--rule.vaultwarden.action=allow"
+      - "--rule.vaultwarden.rule=Host(`vaultwarden.$DOMAINNAME`)"
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.auth.forwardauth.address=http://auth:4181"
       - "traefik.http.middlewares.auth.forwardauth.authResponseHeaders=X-Forwarded-User"
       - "traefik.http.services.auth.loadbalancer.server.port=4181"
+      - "com.centurylinklabs.watchtower.monitor-only=true"
 
 
   test:
