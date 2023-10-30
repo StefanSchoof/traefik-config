@@ -14,11 +14,13 @@ services:
       - "--entrypoints.http.address=:443"
       - "--entrypoints.http.http3=true"
       - "--entrypoints.http.http.tls.certResolver=letsencrypt"
+      - "--entrypoints.http.http.tls.domains[0].main=$DOMAINNAME"
+      - "--entrypoints.http.http.tls.domains[0].sans=*.$DOMAINNAME"
       - "--entrypoints.http.http.middlewares=auth@docker"
       - "--entrypoints.http.http.middlewares=hsts@file"
       - "--certificatesResolvers.letsencrypt.acme.email=$ACMEMAIL"
       - "--certificatesResolvers.letsencrypt.acme.storage=acme.json"
-      - "--certificatesResolvers.letsencrypt.acme.dnsChallenge.provider=duckdns"
+      - "--certificatesResolvers.letsencrypt.acme.dnsChallenge.provider=desec"
     networks: 
       - traefik
     ports:
@@ -30,13 +32,13 @@ services:
       - ./traefik_config.yml:/etc/traefik/traefik_config.yml
       - ./acme.json:/acme.json
     environment: 
-      - DUCKDNS_TOKEN
+      - DESEC_TOKEN
       - DOMAINNAME
     labels:
       - "com.centurylinklabs.watchtower.monitor-only=true"
 
   auth:
-    image: thomseddon/traefik-forward-auth:2-arm
+    image: thomseddon/traefik-forward-auth:2-arm64
     restart: unless-stopped
     networks:
       - traefik
@@ -53,7 +55,7 @@ services:
       # manifest json will be downloaded in default without cookie.
       # Since this is not private, disable auth for it
       - "--rule.manifest.action=allow"
-      - "--rule.manifest.rule=Path(`/manifest.json`)"
+      - "--rule.manifest.rule=Path(`/manifest.json`) || Path(`/icon.png`) || PathPrefix(`/meta`) || PathPrefix(`/ico`)"
       - "--rule.vaultwarden.action=allow"
       - "--rule.vaultwarden.rule=Host(`vaultwarden.$DOMAINNAME`)"
     labels:
