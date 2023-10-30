@@ -10,22 +10,22 @@ http:
         stsseconds: 63072000
         stsIncludeSubdomains: true
   routers:
-    rockrobo:
+    evcc:
       entryPoints:
         - http
-      service: rockrobo
-      rule: Host(`rockrobo.{{env "DOMAINNAME"}}`)
+      service: evcc
+      rule: Host(`evcc.{{env "DOMAINNAME"}}`)
     espressoapi:
       entryPoints:
         - http
       service: espressoapi
       rule: Host(`espresso.{{env "DOMAINNAME"}}`) && PathPrefix(`/api`)
   services:
-    rockrobo:
-      loadBalancer:
-        servers:
-          - url: "http://rockrobo.fritz.box/"
     espressoapi:
       loadBalancer:
         servers:
           - url: "http://pi.fritz.box:8000/"
+    evcc:
+      loadBalancer:
+        servers:
+          - url: "http://zaehler.fritz.box:7070/"
