@@ -9,6 +9,8 @@ http:
       headers:
         stsseconds: 63072000
         stsIncludeSubdomains: true
+    compression:
+      compress: {}
   routers:
     evcc:
       entryPoints:
