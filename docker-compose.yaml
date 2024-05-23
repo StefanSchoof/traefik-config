@@ -28,6 +28,7 @@ services:
     environment: 
       - DESEC_TOKEN
       - DOMAINNAME
+      - GARMIN_BASIC_PW
     labels:
       - "com.centurylinklabs.watchtower.monitor-only=true"
 
@@ -52,6 +53,8 @@ services:
       - "--rule.manifest.rule=Path(`/manifest.json`) || Path(`/icon.png`) || PathPrefix(`/meta`) || PathPrefix(`/ico`)"
       - "--rule.vaultwarden.action=allow"
       - "--rule.vaultwarden.rule=Host(`vaultwarden.$DOMAINNAME`)"
+      - "--rule.evcc-basic.action=allow"
+      - "--rule.evcc-basic.rule=Host(`evcc-basic.$DOMAINNAME`)"
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.auth.forwardauth.address=http://auth:4181"

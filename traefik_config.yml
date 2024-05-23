@@ -11,6 +11,10 @@ http:
         stsIncludeSubdomains: true
     compression:
       compress: {}
+    evcc-basic:
+      basicAuth:
+        users:
+          - "garmin:{{env "GARMIN_BASIC_PW"}}"
   routers:
     evcc:
       entryPoints:
@@ -22,12 +26,23 @@ http:
         - http
       service: espressoapi
       rule: Host(`espresso.{{env "DOMAINNAME"}}`) && PathPrefix(`/api`)
+    evcc-basic:
+      entryPoints:
+        - http
+      service: evcc-basic
+      rule: Host(`evcc-basic.{{env "DOMAINNAME"}}`)
+      middlewares:
+        - evcc-basic
   services:
     espressoapi:
       loadBalancer:
         servers:
           - url: "http://pi.fritz.box:8000/"
     evcc:
+      loadBalancer:
+        servers:
+          - url: "http://zaehler.fritz.box:7070/"
+    evcc-basic:
       loadBalancer:
         servers:
           - url: "http://zaehler.fritz.box:7070/"
