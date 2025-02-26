@@ -15,17 +15,27 @@ http:
       basicAuth:
         users:
           - "garmin:{{env "GARMIN_BASIC_PW"}}"
+    nextcloud-secure-headers:
+      headers:
+        hostsProxyHeaders:
+          - "X-Forwarded-Host"
+        referrerPolicy: "same-origin"
+
   routers:
     evcc:
       entryPoints:
         - http
       service: evcc
       rule: Host(`evcc.{{env "DOMAINNAME"}}`)
+      middlewares:
+        - auth@docker
     espressoapi:
       entryPoints:
         - http
       service: espressoapi
       rule: Host(`espresso.{{env "DOMAINNAME"}}`) && PathPrefix(`/api`)
+      middlewares:
+        - auth@docker
     evcc-basic:
       entryPoints:
         - http
@@ -33,6 +43,18 @@ http:
       rule: Host(`evcc-basic.{{env "DOMAINNAME"}}`)
       middlewares:
         - evcc-basic
+    paperless:
+      entryPoints:
+        - http
+      service: paperless
+      rule: Host(`paperless.{{env "DOMAINNAME"}}`)
+    nextcloud:
+      entryPoints:
+        - http
+      service: nextcloud
+      rule: Host(`nextcloud.{{env "DOMAINNAME"}}`)
+      middlewares:
+        - nextcloud-secure-headers
   services:
     espressoapi:
       loadBalancer:
@@ -46,3 +68,11 @@ http:
       loadBalancer:
         servers:
           - url: "http://zaehler.fritz.box:7070/"
+    paperless:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.178.174:8000/"
+    nextcloud:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.178.174:11000/"

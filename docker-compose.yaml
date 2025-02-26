@@ -4,6 +4,7 @@ services:
     restart: unless-stopped
     command:
       #- "--log.level=DEBUG"
+      #- "--accesslog=true"
       - "--api.insecure=true"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.defaultRule=Host(`{{ index .Labels \"com.docker.compose.service\" }}.$DOMAINNAME`)"
@@ -11,7 +12,7 @@ services:
       - "--entrypoints.http.address=:443"
       - "--entrypoints.http.http3=true"
       - "--entrypoints.http.http.tls.certResolver=letsencrypt"
-      - "--entrypoints.http.http.middlewares=auth@docker,hsts@file,compression@file"
+      - "--entrypoints.http.http.middlewares=hsts@file,compression@file"
       - "--certificatesResolvers.letsencrypt.acme.email=$ACMEMAIL"
       - "--certificatesResolvers.letsencrypt.acme.storage=acme.json"
       - "--certificatesResolvers.letsencrypt.acme.dnsChallenge.provider=desec"
@@ -33,7 +34,7 @@ services:
       - "com.centurylinklabs.watchtower.monitor-only=true"
 
   auth:
-    image: thomseddon/traefik-forward-auth:2-arm64
+    image: ghcr.io/stefanschoof/traefik-forward-auth:2
     restart: unless-stopped
     networks:
       - traefik
@@ -51,10 +52,6 @@ services:
       # Since this is not private, disable auth for it
       - "--rule.manifest.action=allow"
       - "--rule.manifest.rule=Path(`/manifest.json`) || Path(`/icon.png`) || PathPrefix(`/meta`) || PathPrefix(`/ico`)"
-      - "--rule.vaultwarden.action=allow"
-      - "--rule.vaultwarden.rule=Host(`vaultwarden.$DOMAINNAME`)"
-      - "--rule.evcc-basic.action=allow"
-      - "--rule.evcc-basic.rule=Host(`evcc-basic.$DOMAINNAME`)"
     labels:
       - "traefik.enable=true"
       - "traefik.http.middlewares.auth.forwardauth.address=http://auth:4181"
@@ -71,6 +68,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.test.loadbalancer.server.port=80"
+      - "traefik.http.routers.test.middlewares=auth"
 
 networks:
   traefik:
