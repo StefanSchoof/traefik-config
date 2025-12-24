@@ -1,6 +1,8 @@
 services:
   traefik:
-    image: traefik
+    image: dhi.io/traefik:3
+    group_add:
+      - 995
     restart: unless-stopped
     command:
       #- "--log.level=DEBUG"
@@ -14,9 +16,9 @@ services:
       - "--entrypoints.http.http.tls.certResolver=letsencrypt"
       - "--entrypoints.http.http.middlewares=hsts@file,compression@file"
       - "--certificatesResolvers.letsencrypt.acme.email=$ACMEMAIL"
-      - "--certificatesResolvers.letsencrypt.acme.storage=acme.json"
+      - "--certificatesResolvers.letsencrypt.acme.storage=/etc/acme.json"
       - "--certificatesResolvers.letsencrypt.acme.dnsChallenge.provider=desec"
-    networks: 
+    networks:
       - traefik
     ports:
       - 443:443
@@ -25,8 +27,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik_config.yml:/etc/traefik/traefik_config.yml
-      - ./acme.json:/acme.json
-    environment: 
+      - ./acme.json:/etc/acme.json
+    environment:
       - DESEC_TOKEN
       - DOMAINNAME
       - GARMIN_BASIC_PW
