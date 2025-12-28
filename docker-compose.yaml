@@ -1,6 +1,9 @@
 services:
   traefik:
     image: dhi.io/traefik:3
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
     depends_on:
       - dockerproxy
     group_add:
@@ -29,7 +32,7 @@ services:
       - 443:443/udp
       - 9080:8080
     volumes:
-      - ./traefik_config.yml:/etc/traefik/traefik_config.yml
+      - ./traefik_config.yml:/etc/traefik/traefik_config.yml:ro
       - ./acme.json:/etc/acme.json
     environment:
       - DESEC_TOKEN
