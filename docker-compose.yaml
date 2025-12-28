@@ -15,8 +15,8 @@ services:
       - "--api.insecure=true"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.endpoint=tcp://dockerproxy:2375"
-      - "--providers.docker.defaultRule=Host(`{{ index .Labels \"com.docker.compose.service\" }}.$DOMAINNAME`)"
-      - "--providers.file.filename=/etc/traefik/traefik_config.yml"
+      - '--providers.docker.defaultRule=Host(`{{ index .Labels "com.docker.compose.service" }}.$DOMAINNAME`)'
+      - "--providers.file.directory=/etc/traefik/dynamic"
       - "--entrypoints.http.address=:443"
       - "--entrypoints.http.http3=true"
       - "--entrypoints.http.http.tls.certResolver=letsencrypt"
@@ -32,7 +32,7 @@ services:
       - 443:443/udp
       - 9080:8080
     volumes:
-      - ./traefik_config.yml:/etc/traefik/traefik_config.yml:ro
+      - ./dynamic/:/etc/traefik/dynamic:ro
       - ./acme.json:/etc/acme.json
     environment:
       - DESEC_TOKEN
@@ -51,15 +51,15 @@ services:
     security_opt:
       - no-new-privileges
     command:
-      - '-loglevel=info'
-      - '-listenip=0.0.0.0'
-      - '-allowfrom=traefik' # allow only hostname "traefik" to connect
-      - '-allowHEAD=/_ping'
+      - "-loglevel=info"
+      - "-listenip=0.0.0.0"
+      - "-allowfrom=traefik" # allow only hostname "traefik" to connect
+      - "-allowHEAD=/_ping"
       - '-allowGET=/v1\..{1,2}/(version|containers/.*|events.*)'
-      - '-allowbindmountfrom=/var/log,/tmp' # restrict bind mounts to specific directories
-      - '-watchdoginterval=3600' # check once per hour for socket availability
-      - '-stoponwatchdog' # halt program on error and let compose restart it
-      - '-shutdowngracetime=5' # wait 5 seconds before shutting down
+      - "-allowbindmountfrom=/var/log,/tmp" # restrict bind mounts to specific directories
+      - "-watchdoginterval=3600" # check once per hour for socket availability
+      - "-stoponwatchdog" # halt program on error and let compose restart it
+      - "-shutdowngracetime=5" # wait 5 seconds before shutting down
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
@@ -71,7 +71,7 @@ services:
     networks:
       - traefik
     environment:
-#      - LOG_LEVEL=debug
+      #- LOG_LEVEL=debug
       - PROVIDERS_GOOGLE_CLIENT_ID
       - PROVIDERS_GOOGLE_CLIENT_SECRET
       - SECRET
@@ -90,7 +90,6 @@ services:
       - "traefik.http.middlewares.auth.forwardauth.authResponseHeaders=X-Forwarded-User"
       - "traefik.http.services.auth.loadbalancer.server.port=4181"
       - "com.centurylinklabs.watchtower.monitor-only=true"
-
 
   test:
     image: containous/whoami
