@@ -13,8 +13,7 @@ http:
       compress: {}
     evcc-basic:
       basicAuth:
-        users:
-          - "garmin:{{env "GARMIN_BASIC_PW"}}"
+        usersFile: /etc/traefik/authuser/evcc-basic.txt
     nextcloud-secure-headers:
       headers:
         hostsProxyHeaders:
