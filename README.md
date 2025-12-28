@@ -9,5 +9,5 @@ SECRET=<create with openssl rand -hex 16>
 DESEC_TOKEN=<token from desec>
 DOMAINNAME=<your domain>.duckdns.org
 ACMEMAIL=<your mail for Let’s Encrypt>
-WHITELIST=<comma sperated list of mails of allowed google accounts>
+ALLOWLIST=<comma sperated list of mails of allowed google accounts>
 ```

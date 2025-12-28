@@ -77,7 +77,7 @@ services:
       - COOKIE_DOMAIN=$DOMAINNAME
       - AUTH_HOST=auth.$DOMAINNAME
       - LIFETIME=2592000 # 30 days
-      - WHITELIST
+      - WHITELIST=$ALLOWLIST
     command:
       # manifest json will be downloaded in default without cookie.
       # Since this is not private, disable auth for it
