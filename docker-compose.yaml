@@ -67,6 +67,9 @@ services:
   auth:
     image: ghcr.io/stefanschoof/traefik-forward-auth:2
     restart: unless-stopped
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
     networks:
       - traefik
     environment:
@@ -93,6 +96,9 @@ services:
   test:
     image: containous/whoami
     restart: unless-stopped
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
     networks:
       - traefik
     labels:
