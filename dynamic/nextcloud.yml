@@ -1,0 +1,20 @@
+http:
+  middlewares:
+    nextcloud-secure-headers:
+      headers:
+        hostsProxyHeaders:
+          - "X-Forwarded-Host"
+        referrerPolicy: "same-origin"
+  routers:
+    nextcloud:
+      entryPoints:
+        - http
+      service: nextcloud
+      rule: Host(`nextcloud.{{env "DOMAINNAME"}}`)
+      middlewares:
+        - nextcloud-secure-headers
+  services:
+    nextcloud:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.178.174:11000/"

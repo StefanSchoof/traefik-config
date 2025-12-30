@@ -1,0 +1,14 @@
+http:
+  routers:
+    espressoapi:
+      entryPoints:
+        - http
+      service: espressoapi
+      rule: Host(`espresso.{{env "DOMAINNAME"}}`) && PathPrefix(`/api`)
+      middlewares:
+        - auth@docker
+  services:
+    espressoapi:
+      loadBalancer:
+        servers:
+          - url: "http://pi.fritz.box:8000/"

@@ -1,0 +1,29 @@
+http:
+  middlewares:
+    evcc-basic:
+      basicAuth:
+        usersFile: /etc/traefik/authuser/evcc-basic.txt
+  routers:
+    evcc:
+      entryPoints:
+        - http
+      service: evcc
+      rule: Host(`evcc.{{env "DOMAINNAME"}}`)
+      middlewares:
+        - auth@docker
+    evcc-basic:
+      entryPoints:
+        - http
+      service: evcc-basic
+      rule: Host(`evcc-basic.{{env "DOMAINNAME"}}`)
+      middlewares:
+        - evcc-basic
+  services:
+    evcc:
+      loadBalancer:
+        servers:
+          - url: "http://zaehler.fritz.box:7070/"
+    evcc-basic:
+      loadBalancer:
+        servers:
+          - url: "http://zaehler.fritz.box:7070/"

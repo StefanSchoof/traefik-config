@@ -1,0 +1,13 @@
+tls:
+  options:
+    default:
+      minVersion: VersionTLS13
+
+http:
+  middlewares:
+    hsts:
+      headers:
+        stsseconds: 63072000
+        stsIncludeSubdomains: true
+    compression:
+      compress: {}

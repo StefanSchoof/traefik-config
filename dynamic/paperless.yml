@@ -1,0 +1,12 @@
+http:
+  routers:
+    paperless:
+      entryPoints:
+        - http
+      service: paperless
+      rule: Host(`paperless.{{env "DOMAINNAME"}}`)
+  services:
+    paperless:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.178.174:8000/"
