@@ -19,6 +19,7 @@ services:
       - "--entrypoints.http.http3=true"
       - "--entrypoints.http.http.tls.certResolver=letsencrypt"
       - "--entrypoints.http.http.middlewares=hsts@file,compression@file"
+      - "--entrypoints.http.transport.respondingTimeouts.readTimeout=5m0s"
       - "--certificatesResolvers.letsencrypt.acme.email=$ACMEMAIL"
       - "--certificatesResolvers.letsencrypt.acme.storage=/etc/acme.json"
       - "--certificatesResolvers.letsencrypt.acme.dnsChallenge.provider=desec"
@@ -36,7 +37,6 @@ services:
     environment:
       - DESEC_TOKEN
       - DOMAINNAME
-      - GARMIN_BASIC_PW
     labels:
       - "com.centurylinklabs.watchtower.monitor-only=true"
 

@@ -14,16 +14,12 @@ http:
     evcc-basic:
       entryPoints:
         - http
-      service: evcc-basic
+      service: evcc
       rule: Host(`evcc-basic.{{env "DOMAINNAME"}}`)
       middlewares:
         - evcc-basic
   services:
     evcc:
-      loadBalancer:
-        servers:
-          - url: "http://zaehler.fritz.box:7070/"
-    evcc-basic:
       loadBalancer:
         servers:
           - url: "http://zaehler.fritz.box:7070/"
