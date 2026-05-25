@@ -1,0 +1,14 @@
+http:
+  routers:
+    ha:
+      entryPoints:
+        - http
+      service: ha
+      rule: Host(`homeassistant.{{env "DOMAINNAME"}}`)
+#      middlewares:
+#        - auth@docker
+  services:
+    ha:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.178.10:8123/"
