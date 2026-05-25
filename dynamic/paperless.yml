@@ -9,4 +9,4 @@ http:
     paperless:
       loadBalancer:
         servers:
-          - url: "http://192.168.178.174:8000/"
+          - url: "http://paperless:8000/"

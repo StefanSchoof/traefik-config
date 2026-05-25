@@ -22,4 +22,4 @@ http:
     evcc:
       loadBalancer:
         servers:
-          - url: "http://zaehler.fritz.box:7070/"
+          - url: "http://zaehler:7070/"

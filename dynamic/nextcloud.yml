@@ -17,4 +17,4 @@ http:
     nextcloud:
       loadBalancer:
         servers:
-          - url: "http://192.168.178.174:11000/"
+          - url: "http://paperless:11000/"
