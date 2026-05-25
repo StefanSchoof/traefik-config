@@ -17,6 +17,8 @@ services:
       - "--providers.file.directory=/etc/traefik/dynamic"
       - "--entrypoints.http.address=:443"
       - "--entrypoints.http.http3=true"
+      - "--entrypoints.http.http.encodedCharacters.allowEncodedSlash=true"
+      - "--entrypoints.http.http.encodedCharacters.allowEncodedQuestionMark=true"
       - "--entrypoints.http.http.tls.certResolver=letsencrypt"
       - "--entrypoints.http.http.middlewares=hsts@file,compression@file"
       - "--entrypoints.http.transport.respondingTimeouts.readTimeout=5m0s"
